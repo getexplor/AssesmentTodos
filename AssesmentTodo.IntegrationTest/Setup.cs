@@ -1,5 +1,7 @@
-﻿using AssesmentTodo.IntegrationTest.Features.Todo;
+﻿using AssesmentTodo.Infrastructure;
+using AssesmentTodo.IntegrationTest.Features.Todo;
 using AssesmentTodo.Persistance;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,8 +56,8 @@ namespace AssesmentTodo.IntegrationTest
             var json = JsonContent.Create(content);
             var response = await _httpClient.PostAsync($"{ConstStringUrl.AuthUrl}/login", json);
 
-            var token = await response.Content.ReadAsStringAsync();
-
+            var result = await response.Content.ReadAsAsync<BaseResponse>();
+            var token = result.Payload.As<string>();
             return token;
         }
 

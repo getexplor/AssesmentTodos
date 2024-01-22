@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AssesmentTodo.Application.Features;
+using AssesmentTodo.Infrastructure;
+using Newtonsoft.Json;
 
 namespace AssesmentTodo.IntegrationTest.Features.Auth.Queries
 {
@@ -23,8 +25,12 @@ namespace AssesmentTodo.IntegrationTest.Features.Auth.Queries
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var data = response.Content.ReadAsAsync<UserModel>();
-            data.Should().NotBeNull();
+
+            var data = await response.Content.ReadAsAsync<BaseResponse>();
+            data.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
+            var payload = JsonConvert.DeserializeObject<UserModel>(data.Payload.ToString());
+            payload.Should().NotBeNull();
         }
     }
 }

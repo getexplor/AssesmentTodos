@@ -15,7 +15,7 @@ namespace AssesmentTodo.IntegrationTest.Features.Todo.Command
     public class UpdateTodoTest : Setup
     {
         [Fact]
-        public async Task UpdateTodo_ShoudBe_ResponseNull()
+        public async Task UpdateTodo_ShoudBe_ExpectedOk()
         {
             // Arrange
             await Authentication();
@@ -26,10 +26,9 @@ namespace AssesmentTodo.IntegrationTest.Features.Todo.Command
             var response = await _httpClient.PatchAsync(ConstStringUrl.TodoUrl, json);
 
             // Assert
-
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var data = await response.Content.ReadAsStringAsync();
-            data.Should().Be("{}");
+            var data = await response.Content.ReadAsAsync<BaseResponse>();
+            data.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            data.Payload.Should().BeNull();
         }
 
         [Fact]

@@ -2,6 +2,7 @@
 using AssesmentTodo.Application.Features;
 using AssesmentTodo.Infrastructure;
 using FluentAssertions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,10 +28,13 @@ namespace AssesmentTodo.IntegrationTest.Features.Todo.Get
             // Assert
             if (response.IsSuccessStatusCode)
             {
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
-                var data = await response.Content.ReadAsAsync<TodoModel>();
-                data.Should().NotBeNull();
-                data.Id.Equals(id);
+                var data = await response.Content.ReadAsAsync<BaseResponse>();
+                data.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
+                var payload = JsonConvert.DeserializeObject<TodoModel>(data.Payload.ToString());
+                payload.Should().NotBeNull();
+
+                payload.Id.Should().Be(id);
             }
             else
             {

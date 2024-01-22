@@ -15,8 +15,8 @@ namespace AssesmentTodo.IntegrationTest.Features.Todo.Command
     public class DeleteTodoTest : Setup
     {
         [Theory]
-        [InlineData("BFF84DAD-FED0-4D6A-B4C5-01C7C70601D1")]
-        public async Task DeleteTodo_ById_ShoudBe_ResponseNull(string id)
+        [InlineData("BC0CF084-56E4-48E7-B4F4-955946F24F0C")]
+        public async Task DeleteTodo_ById_ShoudBe_ExpectedOk(string id)
         {
             // Arrange
             await Authentication();
@@ -27,9 +27,10 @@ namespace AssesmentTodo.IntegrationTest.Features.Todo.Command
             // Assert
             if (response.IsSuccessStatusCode)
             {
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
-                var data = await response.Content.ReadAsStringAsync();
-                data.Should().Be("{}");
+                var data = await response.Content.ReadAsAsync<BaseResponse>();
+                data.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
+                data.Payload.Should().BeNull();
             }
             else
             {

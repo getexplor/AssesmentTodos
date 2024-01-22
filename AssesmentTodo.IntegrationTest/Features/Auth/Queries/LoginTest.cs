@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using System.Net;
 using AssesmentTodo.Infrastructure;
+using AssesmentTodo.Application.Features;
+using Newtonsoft.Json;
 
 namespace AssesmentTodo.IntegrationTest.Features.Auth.Queries
 {
@@ -29,8 +31,11 @@ namespace AssesmentTodo.IntegrationTest.Features.Auth.Queries
             var response = await _httpClient.PostAsync($"{ConstStringUrl.AuthUrl}/login", json);
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            response.Content.ReadAsStringAsync().Should().NotBeNull();
+            var data = await response.Content.ReadAsAsync<BaseResponse>();
+            data.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
+            var payload = data.Payload.ToString();
+            payload.Should().NotBeNull();
         }
 
         [Fact]

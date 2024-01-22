@@ -2,6 +2,7 @@
 using AssesmentTodo.Application.Features;
 using AssesmentTodo.Infrastructure;
 using FluentAssertions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,22 +16,23 @@ namespace AssesmentTodo.IntegrationTest.Features.Todo.Create
     public class CreateTodoTest : Setup
     {
         [Fact]
-        public async Task CreateTodo_ShoudBe_ResponseNull()
+        public async Task CreateTodo_ShoudBe_ExpectedOk()
         {
             // Arrange
             await Authentication();
 
             // Act
-            var content = new CreateTodoCommand("test integration test 4", "test integration test");
+            var content = new CreateTodoCommand("test integration test 17", "test integration test");
             var json = JsonContent.Create(content);
             var response = await _httpClient.PostAsync(ConstStringUrl.TodoUrl, json);
 
             // Assert
             if (response.IsSuccessStatusCode)
             {
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
-                var data = await response.Content.ReadAsStringAsync();
-                data.Should().Be("{}");
+                var data = await response.Content.ReadAsAsync<BaseResponse>();
+                data.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
+                data.Payload.Should().BeNull();
             }
             else
             {

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using FluentAssertions;
 using System.Net;
 using AssesmentTodo.Application;
+using AssesmentTodo.Infrastructure;
+using Newtonsoft.Json;
 
 namespace AssesmentTodo.IntegrationTest.Features.Todo.Get
 {
@@ -19,8 +21,11 @@ namespace AssesmentTodo.IntegrationTest.Features.Todo.Get
             var response = await _httpClient.GetAsync($"{ConstStringUrl.TodoUrl}/list");
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            (await response.Content.ReadAsAsync<List<TodoModel>>()).Should().NotBeNull();
+            var data = await response.Content.ReadAsAsync<BaseResponse>();
+            data.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
+            var payload = JsonConvert.DeserializeObject<List<TodoModel>>(data.Payload.ToString());
+            payload.Should().NotBeNull();
         }
     }
 }
